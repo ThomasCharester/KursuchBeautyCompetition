@@ -101,6 +101,7 @@ private:
 			ratings.emplace_back(rating);
 		}
 		void calculateRating() {
+			if (ratings.empty()) return;
 			rate = 0;
 			for (int r : ratings)
 				rate += r;
@@ -200,7 +201,8 @@ public:
 
 	void addParticipant();
 	void removeParticipant();
-
+	void banParticipant();
+	void unbanParticipant();
 	void rateParticipant();
 
 	void sortParticipantRate() { sort(participants.begin(), participants.end(), Participant::byRate); }
@@ -446,8 +448,10 @@ public:
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список выбывших участниц");
 			printColor("3 - Оценить участницу");
+			printColor("4 - Дисквалифицировать участницу");
+			printColor("5 - Вернуть дисквалифицированную участницу");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -465,6 +469,14 @@ public:
 			case 3:
 				system("cls");
 				db->rateParticipant();
+				break;
+			case 4:
+				system("cls");
+				db->banParticipant();
+				break;
+			case 5:
+				system("cls");
+				db->unbanParticipant();
 				break;
 			}
 		}
@@ -882,6 +894,38 @@ void Database::removeParticipant() {
 	writeParticipantsToFile();
 
 	ui->printColor("&3Участница успешно удалена");
+}
+void Database::banParticipant()
+{
+	showGenericParticipantInfo();
+
+	if (participants.empty()) {
+		ui->printColor("&1 Нечего удалять");
+		return;
+	}
+	int id = ui->inputRange<int>("Выберите номер участницы, которая выбывает", 0, participants.size() - 1);
+
+	if (!ui->confirm()) return;
+
+	participants.at(id)->isParticipant = false;
+
+	writeParticipantsToFile();
+}
+void Database::unbanParticipant()
+{
+	showBannedParticipantInfo();
+
+	if (participants.empty()) {
+		ui->printColor("&1 Нечего удалять");
+		return;
+	}
+	int id = ui->inputRange<int>("Выберите номер возвращаемой участницы", 0, participants.size() - 1);
+
+	if (!ui->confirm()) return;
+
+	participants.at(id)->isParticipant = true;
+
+	writeParticipantsToFile();
 }
 void Database::rateParticipant()
 {
