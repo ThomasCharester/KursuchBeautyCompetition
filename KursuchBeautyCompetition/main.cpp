@@ -49,8 +49,12 @@ private:
 		int age = 0;
 		int weight = 0;
 		int height = 0;
-		int rate = 0;
 		bool isParticipant = true;
+
+		int rate = 0;
+		vector<string> rated;
+		vector<int> ratings;
+
 		Participant() {};
 		Participant(string name, string surName, string country, int age, int height, int weight, int rate, bool isParticipant) {
 			this->name = name;
@@ -65,7 +69,10 @@ private:
 		void addToFile() const
 		{
 			fstream file("participants.txt", ios::app);
-			file << name << ' ' << surName << ' ' << country << ' ' << age << ' ' << height << ' ' << weight << ' ' << rate << ' ' << isParticipant << '\n';
+			file << "p " << name << ' ' << surName << ' ' << country << ' ' << age << ' ' << height << ' ' << weight << ' ' << rate << ' ' << isParticipant << '\n';
+			for (int i = 0; i < rated.size(); i++)
+				file << "r " << rated.at(i) << ' ' << ratings.at(i) << '\n';
+
 			file.close();
 		}
 		static bool byRate(const Participant* pt1, const Participant* pt2) {
@@ -82,6 +89,22 @@ private:
 		}
 		static bool byCountry(const Participant* pt1, const Participant* pt2) {
 			return pt1->country.compare(pt2->country) < 0;
+		}
+
+		void addRating(string login, int rating) {
+			for (int i = 0; i < rated.size(); i++)
+				if (rated.at(i) == login) {
+					ratings.at(i) = rating;
+					return;
+				}
+			rated.emplace_back(login);
+			ratings.emplace_back(rating);
+		}
+		void calculateRating() {
+			rate = 0;
+			for (int r : ratings)
+				rate += r;
+			rate /= ratings.size();
 		}
 	};
 	Account* currentAccount = nullptr;
@@ -101,7 +124,7 @@ private:
 		return accounts.at(id)->password == password;
 	}
 
-	void calculateParticipantRate();
+	void calculateParticipantsRatings();
 public:
 	Database(UI* ui);
 
@@ -215,26 +238,37 @@ public:
 		getline(file, temp, '\n');
 		int size = stoi(temp);
 
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < size; )
 		{
-			string name, surName, country;
-			int age, weight, height, rate;
-			bool isParticipant;
-			getline(file, name, ' ');
-			getline(file, surName, ' ');
-			getline(file, country, ' ');
 			getline(file, temp, ' ');
-			age = stoi(temp);
-			getline(file, temp, ' ');
-			height = stoi(temp);
-			getline(file, temp, ' ');
-			weight = stoi(temp);
-			getline(file, temp, ' ');
-			rate = stoi(temp);
-			getline(file, temp, '\n');
-			isParticipant = stoi(temp);
-
-			participants.emplace_back(new Participant(name, surName, country, age, height, weight, rate, isParticipant));
+			if (temp == "p") {
+				i++;
+				string name, surName, country;
+				int age, weight, height, rate;
+				bool isParticipant;
+				getline(file, name, ' ');
+				getline(file, surName, ' ');
+				getline(file, country, ' ');
+				getline(file, temp, ' ');
+				age = stoi(temp);
+				getline(file, temp, ' ');
+				height = stoi(temp);
+				getline(file, temp, ' ');
+				weight = stoi(temp);
+				getline(file, temp, ' ');
+				rate = stoi(temp);
+				getline(file, temp, '\n');
+				isParticipant = stoi(temp);
+				participants.emplace_back(new Participant(name, surName, country, age, height, weight, rate, isParticipant));
+			}
+			else if (temp == "r") {
+				string login;
+				int rating;
+				getline(file, login, ' ');
+				getline(file, temp, '\n');
+				rating = stoi(temp);
+				participants.at(participants.size() - 1)->addRating(login, rating);
+			}
 		}
 		file.close();
 	}
@@ -380,8 +414,9 @@ public:
 			printColor("&6Добро пожаловать " + db->getLogin());
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список участниц по рейтингу");
+			printColor("3 - Поиск в списке участниц");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 2);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -396,6 +431,9 @@ public:
 				db->showRateParticipantInfo();
 				pressAnyButton();
 				break;
+			case 3:
+				searchMenu();
+				break;
 			}
 		}
 	}
@@ -407,8 +445,9 @@ public:
 			printColor("&6Добро пожаловать " + db->getLogin());
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список выбывших участниц");
+			printColor("3 - Оценить участницу");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 2);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -422,6 +461,10 @@ public:
 			case 2:
 				db->showBannedParticipantInfo();
 				pressAnyButton();
+				break;
+			case 3:
+				system("cls");
+				db->rateParticipant();
 				break;
 			}
 		}
@@ -526,6 +569,40 @@ public:
 			return;
 		}
 	}
+	void searchMenu() {
+		while (true) {
+			if (!db->isLoggedIn()) return;
+			system("cls");
+			printColor("Признаки поиска");
+			printColor("1 - По стране");
+			printColor("2 - По фамилии");
+			printColor("3 - По возрасту");
+			printColor("0 - Выйти");
+
+			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
+			system("cls");
+			switch (choice) {
+			case 0:
+				return;
+				break;
+			case 1:
+				system("cls");
+				db->findParticipantCountry();
+				pressAnyButton();
+				break;
+			case 2:
+				system("cls");
+				db->findParticipantSurname();
+				pressAnyButton();
+				break;
+			case 3:
+				system("cls");
+				db->findParticipantAge();
+				pressAnyButton();
+				break;
+			}
+		}
+	}
 };
 
 int main() {
@@ -566,15 +643,21 @@ int main() {
 
 // Определения методов
 
-Database::Database(UI* ui) {
-	readParticipantsFromFile();
-
-	this->ui = ui;
-	//ui->startUI();
+void Database::calculateParticipantsRatings()
+{
+	for (Participant* p : participants)
+		p->calculateRating();
 }
 
+Database::Database(UI* ui) {
+	readParticipantsFromFile();
+	calculateParticipantsRatings();
+
+	this->ui = ui;
+}
 Database::~Database() {
 	writeAccountsToFile();
+	calculateParticipantsRatings();
 	writeParticipantsToFile();
 }
 
@@ -588,8 +671,8 @@ void Database::login() {
 		if (accounts.empty())
 		{
 			ui->printColor("&1Нет аккаунтов для авторизации");
-			ui->printColor("Создайте аккаунт для авторизации");
-			addAccount();
+			ui->printColor("Создайте аккаунт администратора для начала работы с базой данных");
+			addAccount(1);
 			currentAccount = accounts.at(0);
 			ui->printColor("&3Авторизация успешна");
 			return;
@@ -662,7 +745,6 @@ void Database::showAccounts() {
 		}
 	}
 }
-
 void Database::addAccount(int type) {
 	string login;
 	while (true) {
@@ -680,7 +762,6 @@ void Database::addAccount(int type) {
 
 	writeAccountsToFile();
 }
-
 void Database::removeAccount() {
 	showAccounts();
 
@@ -801,4 +882,67 @@ void Database::removeParticipant() {
 	writeParticipantsToFile();
 
 	ui->printColor("&3Участница успешно удалена");
+}
+void Database::rateParticipant()
+{
+	if (participants.empty())
+	{
+		ui->printColor("&1Некого оценивать");
+		return;
+	}
+	showGenericParticipantInfo();
+
+	int id = ui->inputRange<int>("Выберите номер оцениваемой участницы", 0, participants.size() - 1);
+	int rating = ui->inputRange<int>("Введите оценку", 0, 100);
+
+	participants.at(id)->addRating(getLogin(),rating);
+	participants.at(id)->calculateRating();
+
+	writeParticipantsToFile();
+}
+
+void Database::findParticipantSurname() {
+	if (participants.empty())
+	{
+		ui->printColor("&1Список участниц пуст");
+		return;
+	}
+	string surName = ui->input<string>("Введите фамилию для поиска: ");
+	for (int i = 0; i < participants.size(); i++) {
+		if (participants.at(i)->isParticipant && participants.at(i)->surName == surName)
+			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
+				+ "\n\tCountry: " + participants.at(i)->country
+				+ "\n\tAge: " + to_string(participants.at(i)->age)
+				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+	}
+}
+void Database::findParticipantAge() {
+	if (participants.empty())
+	{
+		ui->printColor("&1Список участников пуст");
+		return;
+	}
+	int age = ui->input<int>("Введите возраст для поиска: ");
+	for (int i = 0; i < participants.size(); i++) {
+		if (participants.at(i)->isParticipant && participants.at(i)->age == age)
+			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
+				+ "\n\tCountry: " + participants.at(i)->country
+				+ "\n\tAge: " + to_string(participants.at(i)->age)
+				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+	}
+}
+void Database::findParticipantCountry() {
+	if (participants.empty())
+	{
+		ui->printColor("&1Список участников пуст");
+		return;
+	}
+	string country = ui->input<string>("Введите страну для поиска: ");
+	for (int i = 0; i < participants.size(); i++) {
+		if (participants.at(i)->isParticipant && participants.at(i)->country == country)
+			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
+				+ "\n\tCountry: " + participants.at(i)->country
+				+ "\n\tAge: " + to_string(participants.at(i)->age)
+				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+	}
 }
