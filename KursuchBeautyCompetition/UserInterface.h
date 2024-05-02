@@ -9,6 +9,7 @@ private:
 public:
 	// Цвета 0-Белый,1-Красный,2-Синий,3-Зелёный,4-Оранжевый,5-Розовый,6-Жёлтый.
 	enum colors : int {
+		Default,
 		White,
 		Red,
 		Blue,
@@ -31,6 +32,7 @@ public:
 		switch (color) {
 		case UI::colors::White:
 			SetConsoleTextAttribute(handle, 7);
+			break;
 		case UI::colors::Red:
 			SetConsoleTextAttribute(handle, 12);
 			break;
@@ -63,7 +65,7 @@ public:
 			cin >> input;
 			SetConsoleCP(866);
 			if (cin.fail()) {
-				printColor("&1Неправильный тип данных!");
+				printColor("&2Неправильный тип данных!");
 				cin.clear();
 				cin.ignore(100500, '\n');
 			}
@@ -92,12 +94,12 @@ public:
 			printColor(text + " : ", newLine);
 			cin >> input;
 			if (cin.fail()) {
-				printColor("&1Неправильный тип данных!");
+				printColor("&2Неправильный тип данных!");
 				cin.clear();
 				cin.ignore(100500, '\n');
 			}
 			else if ((max != min) && (input > max || input < min)) {
-				printColor("&1Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
+				printColor("&2Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
 			}
 			else {
 				return input;
@@ -133,7 +135,7 @@ public:
 		system("pause");
 	}
 	const bool confirm() {
-		return input<bool>("&6Вы уверены? (&10-Нет&6,&31-Да&6)");
+		return input<bool>("&6Вы уверены? (&20-Нет&6,&41-Да&6)");
 	}
 
 	// Наборы меню	
@@ -395,27 +397,27 @@ Database::~Database() {
 void Database::login() {
 	while (true) {
 		if (currentAccount) {
-			ui->printColor("&1Пользователь уже авторизован");
+			ui->printColor("&2Пользователь уже авторизован");
 			return;
 		}
 		readAccountsFromFile();
 		if (accounts.empty())
 		{
-			ui->printColor("&1Нет аккаунтов для авторизации");
+			ui->printColor("&2Нет аккаунтов для авторизации");
 			ui->printColor("Создайте аккаунт администратора для начала работы с базой данных");
 			addAccount(1);
 			currentAccount = accounts.at(0);
 			accounts.at(0)->access = true;
-			ui->printColor("&3Авторизация успешна");
+			ui->printColor("&4Авторизация успешна");
 			return;
 		}
-		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&10-Нет&9,&31-Да&9)", 0, 1);
+		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&20-Нет&0,&41-Да&0)", 0, 1);
 
 		if (!isRegistered) {
-			bool wantRegister = ui->inputRange("Хотите зарегистрироваться? (&10-Нет&9,&31-Да&9)", 0, 1);
+			bool wantRegister = ui->inputRange("Хотите зарегистрироваться? (&20-Нет&0,&41-Да&0)", 0, 1);
 			if (wantRegister) {
 				addAccount();
-				ui->printColor("&3Регистрация завершена, ожидайте подтверждения организатором");
+				ui->printColor("&4Регистрация завершена, ожидайте подтверждения организатором");
 			}
 		}
 		else {
@@ -427,12 +429,12 @@ void Database::login() {
 				if (checkLogin(login)) {
 					break;
 				}
-				ui->printColor("&1Неверный логин!");
+				ui->printColor("&2Неверный логин!");
 			} while (true);
 
 			int accountID = findID(login);
 			if (!accounts.at(accountID)->access) { 
-				ui->printColor("&1У этого аккаунта нету доступа. Ожидайте подтверждения организатором.");
+				ui->printColor("&2У этого аккаунта нету доступа. Ожидайте подтверждения организатором.");
 				continue;
 			}
 
@@ -444,16 +446,16 @@ void Database::login() {
 				if (checkPassword(accountID, password) || attempts-- < 0) {
 					break;
 				}
-				ui->printColor("&1Неверный пароль!");
+				ui->printColor("&2Неверный пароль!");
 			} while (true);
 
 			if (attempts < 0) {
-				ui->printColor("&1Вы неверно ввели пароль больше 3 раз, попробуйте снова.");
+				ui->printColor("&2Вы неверно ввели пароль больше 3 раз, попробуйте снова.");
 				continue;
 			}
 
 			currentAccount = accounts.at(accountID);
-			ui->printColor("&3Авторизация успешна");
+			ui->printColor("&4Авторизация успешна");
 		}
 		return;
 	}
@@ -462,7 +464,7 @@ void Database::login() {
 void Database::showAccounts() {
 	if (accounts.empty())
 	{
-		ui->printColor("&1Список пуст");
+		ui->printColor("&2Список пуст");
 		return;
 	}
 	for (int i = 0; i < accounts.size(); i++) {
@@ -487,13 +489,13 @@ void Database::addAccount(int type) {
 	while (true) {
 		login = ui->input<string>("Введите логин");
 		if (!checkLogin(login)) break;
-		ui->printColor("&1Этот пользователь уже существует");
+		ui->printColor("&2Этот пользователь уже существует");
 	}
 	string password = ui->input<string>("Введите пароль");
 
 	int accountType = type;
 	if (type < 0 || type > 2)
-		accountType = ui->input<int>("Введите тип аккаунта (&10-Зритель&9,&31-Организатор&9,&42-Судья&9)");
+		accountType = ui->input<int>("Введите тип аккаунта (&20-Зритель&0,&41-Организатор&0,&42-Судья&0)");
 
 	if (isLoggedIn()) accounts.emplace_back(new Account(login, password, accountType, true));
 	else accounts.emplace_back(new Account(login, password, accountType, false));
@@ -504,7 +506,7 @@ void Database::removeAccount() {
 	showAccounts();
 
 	if (accounts.empty()) {
-		ui->printColor("&1 Нечего удалять");
+		ui->printColor("&2 Нечего удалять");
 		return;
 	}
 	int id = ui->inputRange<int>("Выберите номер удаляемого аккаунта", 0, accounts.size() - 1);
@@ -513,7 +515,7 @@ void Database::removeAccount() {
 
 	if (currentAccount == accounts.at(id)) {
 		system("cls");
-		ui->printColor("&1Вы не можете удалить аккаунт в котором авторизованы");
+		ui->printColor("&2Вы не можете удалить аккаунт в котором авторизованы");
 		return;
 	}
 
@@ -522,7 +524,7 @@ void Database::removeAccount() {
 
 	writeAccountsToFile();
 
-	ui->printColor("&3Аккаунт успешно удалён");
+	ui->printColor("&4Аккаунт успешно удалён");
 }
 
 inline void Database::grantAccess()
@@ -534,7 +536,7 @@ inline void Database::grantAccess()
 
 	if (currentAccount == accounts.at(id)) {
 		system("cls");
-		ui->printColor("&1Вы не можете отобрать доступ у аккаунта, в котором авторизованы");
+		ui->printColor("&2Вы не можете отобрать доступ у аккаунта, в котором авторизованы");
 		return;
 	}
 
@@ -542,13 +544,13 @@ inline void Database::grantAccess()
 
 	writeAccountsToFile();
 
-	ui->printColor("&3Параметр доступа изменён");
+	ui->printColor("&4Параметр доступа изменён");
 }
 
 void Database::showGenericParticipantInfo() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	for (int i = 0; i < participants.size(); i++) {
@@ -561,7 +563,7 @@ void Database::showGenericParticipantInfo() {
 void Database::showDetailParticipantInfo() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	for (int i = 0; i < participants.size(); i++) {
@@ -577,7 +579,7 @@ void Database::showDetailParticipantInfo() {
 void Database::showRateParticipantInfo() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	for (int i = 0; i < participants.size(); i++) {
@@ -590,7 +592,7 @@ void Database::showRateParticipantInfo() {
 void Database::showBannedParticipantInfo() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	bool someoneBanned = false;
@@ -607,7 +609,7 @@ void Database::showBannedParticipantInfo() {
 	}
 	if (!someoneBanned)
 	{
-		ui->printColor("&1Список выбывших участников пуст");
+		ui->printColor("&2Список выбывших участников пуст");
 	}
 }
 
@@ -627,7 +629,7 @@ void Database::removeParticipant() {
 	showGenericParticipantInfo();
 
 	if (participants.empty()) {
-		ui->printColor("&1 Нечего удалять");
+		ui->printColor("&2 Нечего удалять");
 		return;
 	}
 	int id = ui->inputRange<int>("Выберите номер удаляемой участницы", 0, participants.size() - 1);
@@ -639,14 +641,14 @@ void Database::removeParticipant() {
 
 	writeParticipantsToFile();
 
-	ui->printColor("&3Участница успешно удалена");
+	ui->printColor("&4Участница успешно удалена");
 }
 void Database::banParticipant()
 {
 	showGenericParticipantInfo();
 
 	if (participants.empty()) {
-		ui->printColor("&1 Нечего удалять");
+		ui->printColor("&2 Нечего удалять");
 		return;
 	}
 	int id = ui->inputRange<int>("Выберите номер участницы, которая выбывает", 0, participants.size() - 1);
@@ -662,7 +664,7 @@ void Database::unbanParticipant()
 	showBannedParticipantInfo();
 
 	if (participants.empty()) {
-		ui->printColor("&1 Нечего удалять");
+		ui->printColor("&2 Нечего удалять");
 		return;
 	}
 	int id = ui->inputRange<int>("Выберите номер возвращаемой участницы", 0, participants.size() - 1);
@@ -677,7 +679,7 @@ void Database::rateParticipant()
 {
 	if (participants.empty())
 	{
-		ui->printColor("&1Некого оценивать");
+		ui->printColor("&2Некого оценивать");
 		return;
 	}
 	showGenericParticipantInfo();
@@ -694,7 +696,7 @@ void Database::rateParticipant()
 void Database::findParticipantSurname() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участниц пуст");
+		ui->printColor("&2Список участниц пуст");
 		return;
 	}
 	string surName = ui->input<string>("Введите фамилию для поиска: ");
@@ -709,7 +711,7 @@ void Database::findParticipantSurname() {
 void Database::findParticipantAge() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	int age = ui->input<int>("Введите возраст для поиска: ");
@@ -724,7 +726,7 @@ void Database::findParticipantAge() {
 void Database::findParticipantCountry() {
 	if (participants.empty())
 	{
-		ui->printColor("&1Список участников пуст");
+		ui->printColor("&2Список участников пуст");
 		return;
 	}
 	string country = ui->input<string>("Введите страну для поиска: ");
