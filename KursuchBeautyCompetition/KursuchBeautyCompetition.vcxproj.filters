@@ -20,13 +20,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="UI.h">
+    <ClInclude Include="UserInterface.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Database.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Account.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Participant.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

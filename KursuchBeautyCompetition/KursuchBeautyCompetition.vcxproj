@@ -132,7 +132,8 @@
   <ItemGroup>
     <ClInclude Include="Account.h" />
     <ClInclude Include="Database.h" />
-    <ClInclude Include="UI.h" />
+    <ClInclude Include="Participant.h" />
+    <ClInclude Include="UserInterface.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
