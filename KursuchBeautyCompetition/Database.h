@@ -52,6 +52,7 @@ public:
 	void showAccounts();
 	void addAccount(int type = -1);
 	void removeAccount();
+	void grantAccess();
 
 	void writeAccountsToFile()
 	{
@@ -84,10 +85,13 @@ public:
 			getline(file, login, ' ');
 			getline(file, password, ' ');
 
-			getline(file, temp, '\n');
+			getline(file, temp, ' ');
 			int accountType = stoi(temp);
 
-			accounts.emplace_back(new Account(login, enDecrypt(password), accountType));
+			getline(file, temp, '\n');
+			bool access = stoi(temp);
+
+			accounts.emplace_back(new Account(login, enDecrypt(password), accountType, access));
 		}
 		file.close();
 	}

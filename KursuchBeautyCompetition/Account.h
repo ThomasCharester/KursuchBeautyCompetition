@@ -25,12 +25,13 @@ struct Account {
 	int accountType = 0;
 	string password = "";
 	string login = "";
-
+	bool access = false;
 	Account() {};
-	Account(string login, string password, int accountType) {
+	Account(string login, string password, int accountType, bool access) {
 		this->login = login;
 		this->password = password;
 		this->accountType = accountType;
+		this->access = access;
 	}
 	bool operator == (const Account& account) {
 		return login == account.login && password == account.password;
@@ -38,7 +39,7 @@ struct Account {
 	void addToFile() const
 	{
 		fstream file("accounts.txt", ios::app);
-		file << login << ' ' << enDecrypt(password) << ' ' << accountType << '\n';
+		file << login << ' ' << enDecrypt(password) << ' ' << accountType << ' '<< access <<'\n';
 		file.close();
 	}
 };

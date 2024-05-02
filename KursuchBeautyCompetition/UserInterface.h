@@ -7,10 +7,6 @@ class UI {
 private:
 	Database* db = nullptr;
 public:
-	UI(){
-		setlocale(LC_ALL, "Russian");
-	}
-	void setDatabase(Database* db) { this->db = db; }
 	// Цвета 0-Белый,1-Красный,2-Синий,3-Зелёный,4-Оранжевый,5-Розовый,6-Жёлтый.
 	enum colors : int {
 		White,
@@ -21,9 +17,20 @@ public:
 		Pink,
 		Yellow
 	};
+	UI(UI::colors defaultColor = White) {
+		setlocale(LC_ALL, "Russian");
+		this->defaultColor = defaultColor;
+		setColor(defaultColor);
+	}
+	void setDatabase(Database* db) { this->db = db; }
+
+	UI::colors defaultColor = White;
+
 	void setColor(UI::colors color) {
 		HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
 		switch (color) {
+		case UI::colors::White:
+			SetConsoleTextAttribute(handle, 7);
 		case UI::colors::Red:
 			SetConsoleTextAttribute(handle, 12);
 			break;
@@ -43,7 +50,7 @@ public:
 			SetConsoleTextAttribute(handle, 13);
 			break;
 		default:
-			SetConsoleTextAttribute(handle, 7);
+			setColor(defaultColor);
 			break;
 		}
 	}
@@ -119,14 +126,14 @@ public:
 			}
 		}
 		SetConsoleCP(866);
-		setColor(White);
+		setColor(defaultColor);
 	}
 	void pressAnyButton() {
 		cout << '\n';
 		system("pause");
 	}
 	const bool confirm() {
-		return input<bool>("&6Вы уверены? (&10-Нет&0,&31-Да&0)");
+		return input<bool>("&6Вы уверены? (&10-Нет&6,&31-Да&6)");
 	}
 
 	// Наборы меню	
@@ -268,8 +275,9 @@ public:
 			printColor("1 - Добавить аккаунт");
 			printColor("2 - Удалить аккаунт");
 			printColor("3 - Посмотреть список аккаунтов");
+			printColor("4 - Редактировать параметр доступа аккаунтов");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 4);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -285,6 +293,9 @@ public:
 				system("cls");
 				db->showAccounts();
 				pressAnyButton();
+				break;
+			case 4:
+				db->grantAccess();
 				break;
 			}
 		}
@@ -394,17 +405,17 @@ void Database::login() {
 			ui->printColor("Создайте аккаунт администратора для начала работы с базой данных");
 			addAccount(1);
 			currentAccount = accounts.at(0);
+			accounts.at(0)->access = true;
 			ui->printColor("&3Авторизация успешна");
 			return;
 		}
-		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&10-Нет&0,&31-Да&0)", 0, 1);
+		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&10-Нет&9,&31-Да&9)", 0, 1);
 
 		if (!isRegistered) {
-			bool wantRegister = ui->inputRange("Хотите зарегистрироваться в качестве зрителя? (&10-Нет&0,&31-Да&0)", 0, 1);
+			bool wantRegister = ui->inputRange("Хотите зарегистрироваться? (&10-Нет&9,&31-Да&9)", 0, 1);
 			if (wantRegister) {
-				addAccount(0);
-				currentAccount = accounts.at(accounts.size() - 1);
-				ui->printColor("&3Авторизация успешна");
+				addAccount();
+				ui->printColor("&3Регистрация завершена, ожидайте подтверждения организатором");
 			}
 		}
 		else {
@@ -420,6 +431,11 @@ void Database::login() {
 			} while (true);
 
 			int accountID = findID(login);
+			if (!accounts.at(accountID)->access) { 
+				ui->printColor("&1У этого аккаунта нету доступа. Ожидайте подтверждения организатором.");
+				continue;
+			}
+
 			int attempts = 3;
 			string password;
 
@@ -463,6 +479,7 @@ void Database::showAccounts() {
 			ui->printColor(" судья", false);
 			break;
 		}
+		ui->printColor(" Доступ: " + to_string(accounts.at(i)->access), false);
 	}
 }
 void Database::addAccount(int type) {
@@ -476,9 +493,10 @@ void Database::addAccount(int type) {
 
 	int accountType = type;
 	if (type < 0 || type > 2)
-		accountType = ui->input<int>("Введите тип аккаунта (&10-Зритель&0,&31-Администратор&0,&42-Судья&0)");
+		accountType = ui->input<int>("Введите тип аккаунта (&10-Зритель&9,&31-Организатор&9,&42-Судья&9)");
 
-	accounts.emplace_back(new Account(login, password, accountType));
+	if (isLoggedIn()) accounts.emplace_back(new Account(login, password, accountType, true));
+	else accounts.emplace_back(new Account(login, password, accountType, false));
 
 	writeAccountsToFile();
 }
@@ -505,6 +523,26 @@ void Database::removeAccount() {
 	writeAccountsToFile();
 
 	ui->printColor("&3Аккаунт успешно удалён");
+}
+
+inline void Database::grantAccess()
+{
+	showAccounts();
+	int id = ui->inputRange<int>("Выберите номер аккаунта для изменения параметра доступа", 0, accounts.size() - 1);
+
+	if (!ui->confirm()) return;
+
+	if (currentAccount == accounts.at(id)) {
+		system("cls");
+		ui->printColor("&1Вы не можете отобрать доступ у аккаунта, в котором авторизованы");
+		return;
+	}
+
+	accounts.at(id)->access = !accounts.at(id)->access;
+
+	writeAccountsToFile();
+
+	ui->printColor("&3Параметр доступа изменён");
 }
 
 void Database::showGenericParticipantInfo() {

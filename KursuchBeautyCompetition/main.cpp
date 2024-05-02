@@ -2,7 +2,7 @@
 
 int main() {
 
-	UI ui;
+	UI ui(UI::colors::Pink);
 	Database database(&ui);
 
 	ui.setDatabase(&database);
