@@ -1,8 +1,12 @@
 #pragma once
 #ifndef DATABASE
 #define DATABASE
+
 #include "Account.h"
 #include "Participant.h"
+#include <fstream>
+#include <algorithm>
+
 class UI;
 
 class Database {
@@ -33,6 +37,12 @@ public:
 	const int whoIsNow() const {
 		if (isLoggedIn()) return currentAccount->accountType;
 		else return -1;
+	}
+	const int whoIs(string login) const {
+		for (Account* ac : accounts) {
+			if (ac->login == login) return ac->accountType;
+		}
+		return -1;
 	}
 	const bool isLoggedIn() const { return currentAccount; }
 

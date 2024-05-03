@@ -2,6 +2,10 @@
 #ifndef USERINTERFACE
 #define USERINTERFACE
 #include "Database.h"
+#include <iomanip>
+#include <iostream>
+#include <conio.h>
+#include "Windows.h"
 
 class UI {
 private:
@@ -396,6 +400,7 @@ Database::~Database() {
 
 void Database::login() {
 	while (true) {
+		// Обработка исключительных ситуаций
 		if (currentAccount) {
 			ui->printColor("&2Пользователь уже авторизован");
 			return;
@@ -411,6 +416,7 @@ void Database::login() {
 			ui->printColor("&4Авторизация успешна");
 			return;
 		}
+		// Предложить регистрацию
 		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&20-Нет&0,&41-Да&0)", 0, 1);
 
 		if (!isRegistered) {
@@ -420,16 +426,21 @@ void Database::login() {
 				ui->printColor("&4Регистрация завершена, ожидайте подтверждения организатором");
 			}
 		}
+		// Авторизация
 		else {
+			system("cls");
+			int authType = ui->inputRange("В какую учётную запись вы хотите зайти?\n&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
+			system("cls");
 			ui->printColor("Войдите в аккаунт");
 			string login;
 
 			do {
 				login = ui->input<string>("Введите логин");
-				if (checkLogin(login)) {
+				if (checkLogin(login) && whoIs(login) == authType) {
 					break;
 				}
-				ui->printColor("&2Неверный логин!");
+				else if(!checkLogin(login)) ui->printColor("&2Неверный логин!");
+				else ui->printColor("&2Этот аккаунт - другого типа!");
 			} while (true);
 
 			int accountID = findID(login);

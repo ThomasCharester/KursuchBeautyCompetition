@@ -2,13 +2,8 @@
 #ifndef ACCOUNT
 #define ACCOUNT
 
-#include <iostream>
-#include <conio.h>
 #include <string>
-#include <vector>
-#include <algorithm>
 #include <fstream>
-#include "windows.h"
 
 using namespace std;
 

@@ -2,13 +2,9 @@
 #ifndef PARTICIPANT
 #define PARTICIPANT
 
-#include <iostream>
-#include <conio.h>
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <fstream>
-#include "windows.h"
 
 struct Participant {
 	string name = "";
