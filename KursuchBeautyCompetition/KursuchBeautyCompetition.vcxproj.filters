@@ -13,10 +13,19 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Файлы заголовков\Comments">
+      <UniqueIdentifier>{047b57ff-25e7-4236-a437-8178f4be411c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Comments">
+      <UniqueIdentifier>{4365227a-8402-4fd1-9fae-75e6ca4a71d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="mainComments.cpp">
+      <Filter>Исходные файлы\Comments</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -31,6 +40,18 @@
     </ClInclude>
     <ClInclude Include="Participant.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="AccountComments.h">
+      <Filter>Файлы заголовков\Comments</Filter>
+    </ClInclude>
+    <ClInclude Include="DatabaseComments.h">
+      <Filter>Файлы заголовков\Comments</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticipantComments.h">
+      <Filter>Файлы заголовков\Comments</Filter>
+    </ClInclude>
+    <ClInclude Include="UserInterfaceComments.h">
+      <Filter>Файлы заголовков\Comments</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
