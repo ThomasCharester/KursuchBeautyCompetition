@@ -165,7 +165,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("&6Добро пожаловать " + db->getLogin());
+			printHeader("&6Добро пожаловать " + db->getLogin(),30);
 			printColor("1 - Редактировать список участниц");
 			printColor("2 - Редактировать список аккаунтов");
 			//printColor("2 - Редактировать список аккаунтов");
@@ -190,7 +190,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("&6Добро пожаловать " + db->getLogin());
+			printHeader("&6Добро пожаловать " + db->getLogin(),30);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список участниц по рейтингу");
 			printColor("3 - Поиск в списке участниц");
@@ -220,7 +220,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("&6Добро пожаловать " + db->getLogin());
+			printHeader("&6Добро пожаловать " + db->getLogin(),30);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список выбывших участниц");
 			printColor("3 - Оценить участницу");
@@ -257,12 +257,24 @@ public:
 			}
 		}
 	}
+	void printHeader(string data, int precision, char fillingChar = '=') {
+		cout << '\n';
 
+		int test = (precision - data.size()) / 2;
+
+		for (int i = 0; i < test; i++)
+			cout << fillingChar;
+		
+		printColor(data, false);
+
+		for (int i = 0; i < test; i++)
+			cout << fillingChar;
+	}
 	void participantsEditing() {
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("Редактировать список участниц");
+			printHeader("Редактировать список участниц",30);
 			printColor("1 - Добавить участницу");
 			printColor("2 - Удалить участницу");
 			printColor("3 - Посмотреть список участниц");
@@ -295,7 +307,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("Редактировать список аккаунтов");
+			printHeader("Редактировать список аккаунтов",30);
 			printColor("1 - Добавить аккаунт");
 			printColor("2 - Удалить аккаунт");
 			printColor("3 - Посмотреть список аккаунтов");
@@ -328,7 +340,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("Порядки сортировки");
+			printHeader("Порядки сортировки",30);
 			printColor("1 - По рейтингу");
 			printColor("2 - По возрасту");
 			printColor("3 - По стране");
@@ -365,7 +377,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printColor("Признаки поиска");
+			printHeader("Признаки поиска",30);
 			printColor("1 - По стране");
 			printColor("2 - По фамилии");
 			printColor("3 - По возрасту");
@@ -447,7 +459,8 @@ void Database::login() {
 		// Авторизация
 		else {
 			system("cls");
-			int authType = ui->inputRange("В какую учётную запись вы хотите зайти?\n&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
+			ui->printHeader("В какую учётную запись вы хотите зайти?", 50);
+			int authType = ui->inputRange("&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
 			system("cls");
 			ui->printColor("Войдите в аккаунт");
 			string login;
