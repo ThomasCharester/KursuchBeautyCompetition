@@ -134,6 +134,24 @@ public:
 		SetConsoleCP(866);
 		setColor(defaultColor);
 	}
+	int printTable(vector<string> data, int precision = -1, bool header = false) {
+		int max = data.at(0).length();
+		for (string str : data) {
+			if (str.length() > max) max = str.length();
+		}
+		if (precision >= 0) max = precision;
+		cout << '\n' << '|';
+		SetConsoleOutputCP(1251);
+		for (string str : data) {
+			cout << setw(max) << left << str << '|';
+		}
+		SetConsoleOutputCP(866);
+		cout << '\n';
+		for (int i = 0; i < data.size() * max + data.size() + 1; i++)
+			if (header) cout << '=';
+			else cout << '-';
+		return max;
+	}
 	void pressAnyButton() {
 		cout << '\n';
 		system("pause");
@@ -439,12 +457,12 @@ void Database::login() {
 				if (checkLogin(login) && whoIs(login) == authType) {
 					break;
 				}
-				else if(!checkLogin(login)) ui->printColor("&2Неверный логин!");
+				else if (!checkLogin(login)) ui->printColor("&2Неверный логин!");
 				else ui->printColor("&2Этот аккаунт - другого типа!");
 			} while (true);
 
 			int accountID = findID(login);
-			if (!accounts.at(accountID)->access) { 
+			if (!accounts.at(accountID)->access) {
 				ui->printColor("&2У этого аккаунта нету доступа. Ожидайте подтверждения организатором.");
 				continue;
 			}
@@ -478,22 +496,38 @@ void Database::showAccounts() {
 		ui->printColor("&2Список пуст");
 		return;
 	}
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Логин");
+	table.emplace_back("Роль");
+	table.emplace_back("Доступ");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < accounts.size(); i++) {
-		ui->printColor(to_string(i) + " " + accounts.at(i)->login);
+		table.clear();
+		table.emplace_back(to_string(i));
+		table.emplace_back(accounts.at(i)->login);
 
 		switch (accounts.at(i)->accountType) {
 		case 0:
-			ui->printColor(" гость", false);
+			table.emplace_back("Гость");
 			break;
 		case 1:
-			ui->printColor(" администратор", false);
+			table.emplace_back("Организатор");
 			break;
 		case 2:
-			ui->printColor(" судья", false);
+			table.emplace_back("Судья");
 			break;
 		}
-		ui->printColor(" Доступ: " + to_string(accounts.at(i)->access), false);
+		if (accounts.at(i)->access) table.emplace_back("Разрешён");
+		else table.emplace_back("Запрещён");
+
+		ui->printTable(table, 15);
 	}
+	SetConsoleCP(866);
 }
 void Database::addAccount(int type) {
 	string login;
@@ -537,8 +571,7 @@ void Database::removeAccount() {
 
 	ui->printColor("&4Аккаунт успешно удалён");
 }
-
-inline void Database::grantAccess()
+void Database::grantAccess()
 {
 	showAccounts();
 	int id = ui->inputRange<int>("Выберите номер аккаунта для изменения параметра доступа", 0, accounts.size() - 1);
@@ -564,12 +597,30 @@ void Database::showGenericParticipantInfo() {
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
+
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant)
-			ui->printColor("ID: " + to_string(i) + " " + participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age));
+		table.clear();
+		if (participants.at(i)->isParticipant) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 void Database::showDetailParticipantInfo() {
 	if (participants.empty())
@@ -577,15 +628,36 @@ void Database::showDetailParticipantInfo() {
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
+
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+	table.emplace_back("Вес");
+	table.emplace_back("Рост");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant)
-			ui->printColor("ID: " + to_string(i) + " " + participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age)
-				+ "\n\tWeight: " + to_string(participants.at(i)->weight) + " kg "
-				+ "\n\tHeight: " + to_string(participants.at(i)->height) + " sm "
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+		table.clear();
+		if (participants.at(i)->isParticipant) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			table.emplace_back(to_string(participants.at(i)->weight));
+			table.emplace_back(to_string(participants.at(i)->height));
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 void Database::showRateParticipantInfo() {
 	if (participants.empty())
@@ -593,12 +665,29 @@ void Database::showRateParticipantInfo() {
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant)
-			ui->printColor("ID: " + to_string(i) + " " + participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+		table.clear();
+		if (participants.at(i)->isParticipant) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 void Database::showBannedParticipantInfo() {
 	if (participants.empty())
@@ -607,17 +696,36 @@ void Database::showBannedParticipantInfo() {
 		return;
 	}
 	bool someoneBanned = false;
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+	table.emplace_back("Вес");
+	table.emplace_back("Рост");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
+		table.clear();
 		if (!participants.at(i)->isParticipant) {
-			ui->printColor("ID: " + to_string(i) + " " + participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age)
-				+ "\n\tWeight: " + to_string(participants.at(i)->weight) + " kg "
-				+ "\n\tHeight: " + to_string(participants.at(i)->height) + " sm "
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			table.emplace_back(to_string(participants.at(i)->weight));
+			table.emplace_back(to_string(participants.at(i)->height));
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
 			someoneBanned = true;
 		}
 	}
+	SetConsoleCP(866);
 	if (!someoneBanned)
 	{
 		ui->printColor("&2Список выбывших участников пуст");
@@ -711,13 +819,32 @@ void Database::findParticipantSurname() {
 		return;
 	}
 	string surName = ui->input<string>("Введите фамилию для поиска: ");
+
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant && participants.at(i)->surName == surName)
-			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age)
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+		table.clear();
+		if (participants.at(i)->isParticipant && participants.at(i)->surName == surName) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 void Database::findParticipantAge() {
 	if (participants.empty())
@@ -726,13 +853,32 @@ void Database::findParticipantAge() {
 		return;
 	}
 	int age = ui->input<int>("Введите возраст для поиска: ");
+
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant && participants.at(i)->age == age)
-			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age)
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+		table.clear();
+		if (participants.at(i)->isParticipant && participants.at(i)->age == age) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 void Database::findParticipantCountry() {
 	if (participants.empty())
@@ -741,13 +887,32 @@ void Database::findParticipantCountry() {
 		return;
 	}
 	string country = ui->input<string>("Введите страну для поиска: ");
+
+	vector<string> table;
+
+	SetConsoleCP(1251);
+	table.emplace_back("ID");
+	table.emplace_back("Имя");
+	table.emplace_back("Фамилия");
+	table.emplace_back("Страна");
+	table.emplace_back("Возраст");
+	table.emplace_back("Рейтинг");
+
+	ui->printTable(table, 15, true);
+
 	for (int i = 0; i < participants.size(); i++) {
-		if (participants.at(i)->isParticipant && participants.at(i)->country == country)
-			ui->printColor(participants.at(i)->name + " " + participants.at(i)->surName
-				+ "\n\tCountry: " + participants.at(i)->country
-				+ "\n\tAge: " + to_string(participants.at(i)->age)
-				+ "\n\tRate: " + to_string(participants.at(i)->rate));
+		table.clear();
+		if (participants.at(i)->isParticipant && participants.at(i)->country == country) {
+			table.emplace_back(to_string(i));
+			table.emplace_back(participants.at(i)->name);
+			table.emplace_back(participants.at(i)->surName);
+			table.emplace_back(participants.at(i)->country);
+			table.emplace_back(to_string(participants.at(i)->age));
+			table.emplace_back(to_string(participants.at(i)->rate));
+			ui->printTable(table, 15);
+		}
 	}
+	SetConsoleCP(866);
 }
 
 #endif // !UI
