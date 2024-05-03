@@ -165,7 +165,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),30);
+			printHeader("&6Добро пожаловать " + db->getLogin(),50);
 			printColor("1 - Редактировать список участниц");
 			printColor("2 - Редактировать список аккаунтов");
 			//printColor("2 - Редактировать список аккаунтов");
@@ -190,7 +190,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),30);
+			printHeader("&6Добро пожаловать " + db->getLogin(),50);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список участниц по рейтингу");
 			printColor("3 - Поиск в списке участниц");
@@ -220,7 +220,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),30);
+			printHeader("&6Добро пожаловать " + db->getLogin(),50);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список выбывших участниц");
 			printColor("3 - Оценить участницу");
@@ -274,7 +274,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Редактировать список участниц",30);
+			printHeader("Редактировать список участниц",50);
 			printColor("1 - Добавить участницу");
 			printColor("2 - Удалить участницу");
 			printColor("3 - Посмотреть список участниц");
@@ -307,7 +307,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Редактировать список аккаунтов",30);
+			printHeader("Редактировать список аккаунтов",50);
 			printColor("1 - Добавить аккаунт");
 			printColor("2 - Удалить аккаунт");
 			printColor("3 - Посмотреть список аккаунтов");
@@ -340,7 +340,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Порядки сортировки",30);
+			printHeader("Порядки сортировки",50);
 			printColor("1 - По рейтингу");
 			printColor("2 - По возрасту");
 			printColor("3 - По стране");
@@ -377,7 +377,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Признаки поиска",30);
+			printHeader("Признаки поиска",50);
 			printColor("1 - По стране");
 			printColor("2 - По фамилии");
 			printColor("3 - По возрасту");
