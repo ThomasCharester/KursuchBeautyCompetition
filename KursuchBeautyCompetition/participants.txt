@@ -1,4 +1,6 @@
 6
+p я Ќе≈бу ЋохЋ€нд 23 1 1 0 0
+p Ћогин ѕароль ф 1 1 1 0 1
 p Jabroni ( USA 45 180 80 30 0
 p Van Darkholm USA 54 180 80 32 1
 r Retard 25
@@ -7,6 +9,3 @@ p Billy Harrington USA 47 185 84 70 1
 r Retard 50
 r DickSucker 90
 p »ван  ольчевский Ѕеларусь 18 180 70 90 1
-r Retard 90
-p я Ќе≈бу ЋохЋ€нд 23 1 1 0 0
-p Ћогин ѕароль ф 1 1 1 0 1

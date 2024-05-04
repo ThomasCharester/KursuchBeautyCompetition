@@ -84,8 +84,14 @@ public:
 		SetConsoleCP(1251);
 		char ch = _getch();
 		do {
-			cout << '*';
-			input += ch;
+			if ((int)ch == 8) {
+				cout << '\b' << ' ' << '\b';
+				input.erase(input.begin() + input.size() - 1);
+			}
+			else {
+				cout << '*';
+				input += ch;
+			}
 			ch = _getch();
 		} while (ch != 13);
 		SetConsoleCP(866);
@@ -194,8 +200,9 @@ public:
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список участниц по рейтингу");
 			printColor("3 - Поиск в списке участниц");
+			printColor("4 - Отсортировать список участниц");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 4);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -212,6 +219,9 @@ public:
 				break;
 			case 3:
 				searchMenu();
+				break;
+			case 4:
+				sortMenu();
 				break;
 			}
 		}
@@ -279,8 +289,9 @@ public:
 			printColor("2 - Удалить участницу");
 			printColor("3 - Посмотреть список участниц");
 			printColor("4 - Отсортировать список участниц");
+			printColor("5 - Найти участницу в списке");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 4);
+			int choice = inputRange<int>("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -299,6 +310,9 @@ public:
 				break;
 			case 4:
 				sortMenu();
+				break;
+			case 5:
+				searchMenu();
 				break;
 			}
 		}
