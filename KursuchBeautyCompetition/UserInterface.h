@@ -84,7 +84,7 @@ public:
 		SetConsoleCP(1251);
 		char ch = _getch();
 		do {
-			if ((int)ch == 8) {
+			if ((int)ch == 8 && !input.empty()) {
 				cout << '\b' << ' ' << '\b';
 				input.erase(input.begin() + input.size() - 1);
 			}
@@ -96,6 +96,19 @@ public:
 		} while (ch != 13);
 		SetConsoleCP(866);
 		return input;
+	}
+	int inputRangeInstant(std::string text, int min = 0, int max = 9, bool newLine = true) {
+		int input;
+		while (true) {
+			printColor(text + " : ", newLine);
+			input = _getch();
+			if (input > 48 + max || input < min + 48) {
+				printColor("&2Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
+			}
+			else {
+				return input - 48;
+			}
+		}
 	}
 	template<typename T>
 	T inputRange(string text, T min, T max, bool newLine = true) {
@@ -158,12 +171,26 @@ public:
 			else cout << '-';
 		return max;
 	}
+	void printHeader(string data, int precision, char fillingChar = '=')
+	{
+		cout << '\n';
+
+		int test = (precision - data.size()) / 2;
+
+		for (int i = 0; i < test; i++)
+			cout << fillingChar;
+
+		printColor(data, false);
+
+		for (int i = 0; i < test; i++)
+			cout << fillingChar;
+	}
 	void pressAnyButton() {
 		cout << '\n';
 		system("pause");
 	}
 	const bool confirm() {
-		return input<bool>("&6Вы уверены? (&20-Нет&6,&41-Да&6)");
+		return inputRangeInstant("&6Вы уверены? (&20-Нет&6,&41-Да&6)", 0, 1);
 	}
 
 	// Наборы меню	
@@ -171,12 +198,11 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),50);
+			printHeader("&6Добро пожаловать " + db->getLogin(), 50);
 			printColor("1 - Редактировать список участниц");
 			printColor("2 - Редактировать список аккаунтов");
-			//printColor("2 - Редактировать список аккаунтов");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 2);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 2);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -196,13 +222,14 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),50);
+			printHeader("&6Добро пожаловать " + db->getLogin(), 50);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список участниц по рейтингу");
 			printColor("3 - Поиск в списке участниц");
 			printColor("4 - Отсортировать список участниц");
+			printColor("5 - Сменить пароль аккаунта");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 4);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -223,6 +250,10 @@ public:
 			case 4:
 				sortMenu();
 				break;
+			case 5:
+				system("cls");
+				db->changePassword();
+				break;
 			}
 		}
 	}
@@ -230,14 +261,15 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("&6Добро пожаловать " + db->getLogin(),50);
+			printHeader("&6Добро пожаловать " + db->getLogin(), 50);
 			printColor("1 - Посмотреть на список участниц");
 			printColor("2 - Посмотреть на список выбывших участниц");
 			printColor("3 - Оценить участницу");
 			printColor("4 - Дисквалифицировать участницу");
 			printColor("5 - Вернуть дисквалифицированную участницу");
+			printColor("6 - Сменить пароль аккаунта");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 5);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 6);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -264,34 +296,25 @@ public:
 				system("cls");
 				db->unbanParticipant();
 				break;
+			case 6:
+				system("cls");
+				db->changePassword();
+				break;
 			}
 		}
-	}
-	void printHeader(string data, int precision, char fillingChar = '=') {
-		cout << '\n';
-
-		int test = (precision - data.size()) / 2;
-
-		for (int i = 0; i < test; i++)
-			cout << fillingChar;
-		
-		printColor(data, false);
-
-		for (int i = 0; i < test; i++)
-			cout << fillingChar;
 	}
 	void participantsEditing() {
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Редактировать список участниц",50);
+			printHeader("Редактировать список участниц", 50);
 			printColor("1 - Добавить участницу");
 			printColor("2 - Удалить участницу");
 			printColor("3 - Посмотреть список участниц");
 			printColor("4 - Отсортировать список участниц");
 			printColor("5 - Найти участницу в списке");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 5);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -321,13 +344,14 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Редактировать список аккаунтов",50);
+			printHeader("Редактировать список аккаунтов", 50);
 			printColor("1 - Добавить аккаунт");
 			printColor("2 - Удалить аккаунт");
 			printColor("3 - Посмотреть список аккаунтов");
 			printColor("4 - Редактировать параметр доступа аккаунтов");
+			printColor("5 - Сменить пароль аккаунта");
 			printColor("0 - Выйти");
-			int choice = inputRange<int>("Выберите действие из списка", 0, 4);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -347,6 +371,10 @@ public:
 			case 4:
 				db->grantAccess();
 				break;
+			case 5:
+				system("cls");
+				db->changePassword();
+				break;
 			}
 		}
 	}
@@ -354,7 +382,7 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Порядки сортировки",50);
+			printHeader("Порядки сортировки", 50);
 			printColor("1 - По рейтингу");
 			printColor("2 - По возрасту");
 			printColor("3 - По стране");
@@ -362,7 +390,7 @@ public:
 			printColor("5 - По росту");
 			printColor("0 - Выйти");
 
-			int choice = inputRange<int>("Выберите действие из списка", 0, 5);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 5);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -391,13 +419,12 @@ public:
 		while (true) {
 			if (!db->isLoggedIn()) return;
 			system("cls");
-			printHeader("Признаки поиска",50);
+			printHeader("Признаки поиска", 50);
 			printColor("1 - По стране");
 			printColor("2 - По фамилии");
 			printColor("3 - По возрасту");
 			printColor("0 - Выйти");
-
-			int choice = inputRange<int>("Выберите действие из списка", 0, 3);
+			int choice = inputRangeInstant("Выберите действие из списка", 0, 3);
 			system("cls");
 			switch (choice) {
 			case 0:
@@ -422,6 +449,7 @@ public:
 		}
 	}
 };
+
 // Определения методов
 
 void Database::calculateParticipantsRatings()
@@ -461,10 +489,10 @@ void Database::login() {
 			return;
 		}
 		// Предложить регистрацию
-		bool isRegistered = ui->inputRange("Вы уже зарегистрированы в системе? (&20-Нет&0,&41-Да&0)", 0, 1);
+		bool isRegistered = ui->inputRangeInstant("Вы уже зарегистрированы в системе? (&20-Нет&0,&41-Да&0)", 0, 1);
 
 		if (!isRegistered) {
-			bool wantRegister = ui->inputRange("Хотите зарегистрироваться? (&20-Нет&0,&41-Да&0)", 0, 1);
+			bool wantRegister = ui->inputRangeInstant("Хотите зарегистрироваться? (&20-Нет&0,&41-Да&0)", 0, 1);
 			if (wantRegister) {
 				addAccount();
 				ui->printColor("&4Регистрация завершена, ожидайте подтверждения организатором");
@@ -474,7 +502,7 @@ void Database::login() {
 		else {
 			system("cls");
 			ui->printHeader("В какую учётную запись вы хотите зайти?", 50);
-			int authType = ui->inputRange("&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
+			int authType = ui->inputRangeInstant("&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
 			system("cls");
 			ui->printColor("Войдите в аккаунт");
 			string login;
@@ -616,6 +644,33 @@ void Database::grantAccess()
 	writeAccountsToFile();
 
 	ui->printColor("&4Параметр доступа изменён");
+}
+void Database::changePassword()
+{
+	if (!isLoggedIn()) { return; }
+
+	if (whoIsNow() == 1) {
+		// Админ меняет пароли юзеров
+		showAccounts();
+		int id = ui->inputRange<int>("Выберите номер аккаунта для изменения пароля", 0, accounts.size() - 1);
+
+		if (!ui->confirm()) return;
+
+		string password = ui->input<string>("Введите новый пароль");
+		accounts.at(id)->password = password;
+
+		writeAccountsToFile();
+
+		ui->printColor("&4Параметр доступа изменён");
+	}
+	else {
+		if (!ui->confirm()) return;
+
+		string password = ui->input<string>("Введите новый пароль");
+		currentAccount->password = password;
+
+		writeAccountsToFile();
+	}
 }
 
 void Database::showGenericParticipantInfo() {

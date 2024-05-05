@@ -29,6 +29,7 @@ private:
 	}
 
 	void calculateParticipantsRatings();
+
 public:
 	Database(UI* ui);
 
@@ -63,6 +64,7 @@ public:
 	void addAccount(int type = -1);
 	void removeAccount();
 	void grantAccess();
+	void changePassword();
 
 	void writeAccountsToFile()
 	{
