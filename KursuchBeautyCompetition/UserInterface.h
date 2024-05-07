@@ -818,9 +818,9 @@ void Database::addParticipant() {
 	string name = ui->input<string>("¬ведите им€");
 	string surName = ui->input<string>("¬ведите фамилию");
 	string country = ui->input<string>("¬ведите страну");
-	int age = ui->input<int>("¬ведите возраст");
-	int weight = ui->input<int>("¬ведите вес");
-	int height = ui->input<int>("¬ведите рост");
+	int age = ui->inputRange<int>("¬ведите возраст", 0, 1000);
+	int weight = ui->inputRange<int>("¬ведите вес", 0, 1000);
+	int height = ui->inputRange<int>("¬ведите рост", 0, 1000);
 
 	participants.emplace_back(new Participant(name, surName, country, age, height, weight, 0, true));
 

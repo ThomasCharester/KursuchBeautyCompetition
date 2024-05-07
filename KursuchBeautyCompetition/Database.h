@@ -53,7 +53,6 @@ public:
 		}
 		return false;
 	}
-
 	const string getLogin() const { return currentAccount->login; }
 
 	// ”чЄтные записи //
