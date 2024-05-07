@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2024-05-07T10:33:55.922Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0" etag="gSMpwDwTHnyO1aUA90OG" version="24.3.1" type="github">
+<mxfile host="app.diagrams.net" modified="2024-05-07T10:34:23.214Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:123.0) Gecko/20100101 Firefox/123.0" etag="4-ZtRQLgShHGYj6RNAGK" version="24.3.1" type="github">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
     <mxGraphModel dx="512" dy="552" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
@@ -51,7 +51,7 @@
         <mxCell id="-oNcuIuCmFkQ8faYrNBV-15" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="-oNcuIuCmFkQ8faYrNBV-13">
           <mxGeometry y="190" width="520" height="8" as="geometry" />
         </mxCell>
-        <mxCell id="-oNcuIuCmFkQ8faYrNBV-16" value="&lt;div&gt;+ addToFile():voidstatic bool byRate(const Participant* pt1, const Participant* pt2):static bool&lt;br&gt;+ byHeight(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ byAge(const Participant* pt1, const Participant* pt2) :bool&lt;br&gt;+ byWeight(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ byCountry(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ addRating(string login, int rating):void&lt;br&gt;+ calculateRating():void&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-oNcuIuCmFkQ8faYrNBV-13">
+        <mxCell id="-oNcuIuCmFkQ8faYrNBV-16" value="&lt;div&gt;+ addToFile():void&lt;/div&gt;&lt;div&gt;+ byRate(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ byHeight(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ byAge(const Participant* pt1, const Participant* pt2) :bool&lt;br&gt;+ byWeight(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ byCountry(const Participant* pt1, const Participant* pt2):bool&lt;br&gt;+ addRating(string login, int rating):void&lt;br&gt;+ calculateRating():void&lt;/div&gt;" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="-oNcuIuCmFkQ8faYrNBV-13">
           <mxGeometry y="198" width="520" height="122" as="geometry" />
         </mxCell>
       </root>
