@@ -2,7 +2,9 @@
 #include "Music.h"
 
 int main() {
-	startPlaying();
+
+	MusicPlayer player;
+	player.startPlaying();
 
 	UI ui(UI::colors::Pink);
 	Database database(&ui);

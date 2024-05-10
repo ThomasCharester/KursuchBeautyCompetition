@@ -13,6 +13,8 @@
 class UI {
 private:
 	Database* db = nullptr;
+
+
 public:
 	// Цвета 0-Белый,1-Красный,2-Синий,3-Зелёный,4-Оранжевый,5-Розовый,6-Жёлтый.
 	enum colors : int {
