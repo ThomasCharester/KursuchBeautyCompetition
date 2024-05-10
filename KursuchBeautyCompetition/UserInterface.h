@@ -7,6 +7,9 @@
 #include <conio.h>
 #include "Windows.h"
 
+//#define SOUND
+#define ANIMATIONSPEED 20
+
 class UI {
 private:
 	Database* db = nullptr;
@@ -64,8 +67,10 @@ public:
 	T input(string text, bool newLine = true) {
 		T input{};
 		while (true) {
-			printColor(text + " : ", newLine);
+			printColor(text + " : ", newLine, true);
+#ifdef SOUND
 			cout << (char)7;
+#endif
 			SetConsoleCP(1251);
 			cin >> input;
 			SetConsoleCP(866);
@@ -81,8 +86,10 @@ public:
 	}
 	string _input(string text, bool newLine = true) {
 		string input = "";
-		printColor(text + " : ", newLine);
+		printColor(text + " : ", newLine, true);
+#ifdef SOUND 
 		cout << (char)7;
+#endif
 		SetConsoleCP(1251);
 		char ch = _getch();
 		do {
@@ -102,8 +109,10 @@ public:
 	int inputRangeInstant(std::string text, int min = 0, int max = 9, bool newLine = true) {
 		int input;
 		while (true) {
-			printColor(text + " : ", newLine);
+			printColor(text + " : ", newLine, true);
+#ifdef SOUND 
 			cout << (char)7;
+#endif
 			input = _getch();
 			if (input > 48 + max || input < min + 48) {
 				printColor("&2Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
@@ -117,8 +126,10 @@ public:
 	T inputRange(string text, T min, T max, bool newLine = true) {
 		T input{};
 		while (true) {
-			printColor(text + " : ", newLine);
-			cout << (char)7;
+			printColor(text + " : ", newLine,true);
+#ifdef SOUND
+			cout << (char)7; 
+#endif
 			cin >> input;
 			if (cin.fail()) {
 				printColor("&2Неправильный тип данных!");
@@ -140,11 +151,15 @@ public:
 		cout << data;
 		SetConsoleCP(866);
 	}
-	void printColor(string str, bool newLine = true) {
+	void printColor(string str, bool newLine = true, bool animation = false) {
 		SetConsoleCP(1251);
 		if (newLine)  cout << '\n';
 		bool flag = false;
 		for (char ch : str) {
+			if(animation) Sleep(ANIMATIONSPEED);
+#ifdef SOUND
+			cout << (char)7;
+#endif
 			if (!flag)
 				if (ch != '&')
 					cout << ch;
@@ -506,7 +521,7 @@ void Database::login() {
 		else {
 			system("cls");
 			ui->printHeader("В какую учётную запись вы хотите зайти?", 50);
-			int authType = ui->inputRangeInstant("&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор:", 0, 2);
+			int authType = ui->inputRangeInstant("&20-Зритель\n&41-Организатор\n&52-Судья&0\nВаш выбор", 0, 2);
 			system("cls");
 			ui->printColor("Войдите в аккаунт");
 			string login;
