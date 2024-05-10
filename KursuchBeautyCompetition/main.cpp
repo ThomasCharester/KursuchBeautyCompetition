@@ -1,6 +1,8 @@
 #include "UserInterface.h"
+#include "Music.h"
 
 int main() {
+	startPlaying();
 
 	UI ui(UI::colors::Pink);
 	Database database(&ui);

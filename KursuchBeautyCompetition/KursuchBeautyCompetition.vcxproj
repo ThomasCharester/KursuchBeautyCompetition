@@ -134,6 +134,7 @@
     <ClInclude Include="AccountComments.h" />
     <ClInclude Include="Database.h" />
     <ClInclude Include="DatabaseComments.h" />
+    <ClInclude Include="Music.h" />
     <ClInclude Include="Participant.h" />
     <ClInclude Include="ParticipantComments.h" />
     <ClInclude Include="UserInterface.h" />

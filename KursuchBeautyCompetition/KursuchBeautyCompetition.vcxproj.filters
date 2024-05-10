@@ -50,5 +50,8 @@
     <ClInclude Include="UserInterfaceComments.h">
       <Filter>Файлы заголовков\Comments</Filter>
     </ClInclude>
+    <ClInclude Include="Music.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

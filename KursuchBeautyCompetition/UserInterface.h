@@ -153,7 +153,7 @@ public:
 	}
 	void printColor(string str, bool newLine = true, bool animation = false) {
 		SetConsoleCP(1251);
-		if (newLine)  cout << '\n';
+		if (newLine)  cerr << '\n';
 		bool flag = false;
 		for (char ch : str) {
 			if(animation) Sleep(ANIMATIONSPEED);
@@ -162,7 +162,7 @@ public:
 #endif
 			if (!flag)
 				if (ch != '&')
-					cout << ch;
+					cerr << ch;
 				else flag = true;
 			else {
 				setColor(static_cast<UI::colors>((ch - 48)));
@@ -171,6 +171,7 @@ public:
 		}
 		SetConsoleCP(866);
 		setColor(defaultColor);
+		
 	}
 	int printTable(vector<string> data, int precision = -1, bool header = false) {
 		int max = data.at(0).length();
