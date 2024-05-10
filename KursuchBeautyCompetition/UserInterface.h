@@ -65,6 +65,7 @@ public:
 		T input{};
 		while (true) {
 			printColor(text + " : ", newLine);
+			cout << (char)7;
 			SetConsoleCP(1251);
 			cin >> input;
 			SetConsoleCP(866);
@@ -81,6 +82,7 @@ public:
 	string _input(string text, bool newLine = true) {
 		string input = "";
 		printColor(text + " : ", newLine);
+		cout << (char)7;
 		SetConsoleCP(1251);
 		char ch = _getch();
 		do {
@@ -101,6 +103,7 @@ public:
 		int input;
 		while (true) {
 			printColor(text + " : ", newLine);
+			cout << (char)7;
 			input = _getch();
 			if (input > 48 + max || input < min + 48) {
 				printColor("&2Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
@@ -115,6 +118,7 @@ public:
 		T input{};
 		while (true) {
 			printColor(text + " : ", newLine);
+			cout << (char)7;
 			cin >> input;
 			if (cin.fail()) {
 				printColor("&2Неправильный тип данных!");
@@ -455,7 +459,7 @@ public:
 void Database::calculateParticipantsRatings()
 {
 	for (Participant* p : participants)
-		p->calculateRating();
+		p->rating.calculateRating();
 }
 
 Database::Database(UI* ui) {
@@ -735,7 +739,7 @@ void Database::showDetailParticipantInfo() {
 			table.emplace_back(to_string(participants.at(i)->age));
 			table.emplace_back(to_string(participants.at(i)->weight));
 			table.emplace_back(to_string(participants.at(i)->height));
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 		}
 	}
@@ -765,7 +769,7 @@ void Database::showRateParticipantInfo() {
 			table.emplace_back(participants.at(i)->name);
 			table.emplace_back(participants.at(i)->surName);
 			table.emplace_back(participants.at(i)->country);
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 		}
 	}
@@ -802,7 +806,7 @@ void Database::showBannedParticipantInfo() {
 			table.emplace_back(to_string(participants.at(i)->age));
 			table.emplace_back(to_string(participants.at(i)->weight));
 			table.emplace_back(to_string(participants.at(i)->height));
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 			someoneBanned = true;
 		}
@@ -888,8 +892,8 @@ void Database::rateParticipant()
 	int id = ui->inputRange<int>("Выберите номер оцениваемой участницы", 0, participants.size() - 1);
 	int rating = ui->inputRange<int>("Введите оценку", 0, 100);
 
-	participants.at(id)->addRating(getLogin(), rating);
-	participants.at(id)->calculateRating();
+	participants.at(id)->rating.addRating(getLogin(), rating);
+	participants.at(id)->rating.calculateRating();
 
 	writeParticipantsToFile();
 }
@@ -922,7 +926,7 @@ void Database::findParticipantSurname() {
 			table.emplace_back(participants.at(i)->surName);
 			table.emplace_back(participants.at(i)->country);
 			table.emplace_back(to_string(participants.at(i)->age));
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 		}
 	}
@@ -956,7 +960,7 @@ void Database::findParticipantAge() {
 			table.emplace_back(participants.at(i)->surName);
 			table.emplace_back(participants.at(i)->country);
 			table.emplace_back(to_string(participants.at(i)->age));
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 		}
 	}
@@ -990,7 +994,7 @@ void Database::findParticipantCountry() {
 			table.emplace_back(participants.at(i)->surName);
 			table.emplace_back(participants.at(i)->country);
 			table.emplace_back(to_string(participants.at(i)->age));
-			table.emplace_back(to_string(participants.at(i)->rate));
+			table.emplace_back(to_string(participants.at(i)->rating.rate));
 			ui->printTable(table, 15);
 		}
 	}

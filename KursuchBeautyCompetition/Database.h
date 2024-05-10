@@ -53,6 +53,7 @@ public:
 		}
 		return false;
 	}
+
 	const string getLogin() const { return currentAccount->login; }
 
 	// ”чЄтные записи //
@@ -183,7 +184,7 @@ public:
 				getline(file, login, ' ');
 				getline(file, temp, '\n');
 				rating = stoi(temp);
-				participants.at(participants.size() - 1)->addRating(login, rating);
+				participants.at(participants.size() - 1)->rating.addRating(login, rating);
 			}
 		}
 		file.close();
