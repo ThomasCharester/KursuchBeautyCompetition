@@ -15,7 +15,8 @@ string enDecrypt(string text) {
 	return text;
 }
 
-struct Account {
+class Account {
+public:
 	// 0 - Зритель, 1 - Организатор, 2 - Судья
 	int accountType = 0;
 	string password = "";
@@ -34,7 +35,7 @@ struct Account {
 	void addToFile() const
 	{
 		fstream file("accounts.txt", ios::app);
-		file << login << ' ' << enDecrypt(password) << ' ' << accountType << ' '<< access <<'\n';
+		file << login << ' ' << enDecrypt(password) << ' ' << accountType << ' ' << access << '\n';
 		file.close();
 	}
 };

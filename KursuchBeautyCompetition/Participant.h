@@ -6,8 +6,10 @@
 #include <vector>
 #include <fstream>
 
-struct Participant {
-	struct Rating {
+class Participant {
+public:
+	class Rating {
+	public:
 		int rate = 0;
 		vector<string> rated;
 		vector<int> ratings;
