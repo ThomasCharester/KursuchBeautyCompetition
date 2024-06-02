@@ -690,7 +690,7 @@ void Database::grantAccess()
 	}
 
 	accounts.at(id)->access = !accounts.at(id)->access;
-	MusicPlayer::playSound(Access);
+	MusicPlayer::playSound(Access,true);
 	if (accounts.at(id)->access) MusicPlayer::playSound(Granted);
 	else MusicPlayer::playSound(Denied);
 

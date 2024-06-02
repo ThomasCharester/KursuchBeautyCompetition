@@ -5,6 +5,8 @@ int main() {
 	//MusicPlayer player;
 	//player.startPlaying();
 
+	MusicPlayer::playMusic();
+
 	UI ui(UI::colors::Pink);
 	Database database(&ui);
 
@@ -29,8 +31,8 @@ int main() {
 		bool choice = ui.inputRangeInstant("Желаете &2выйти&0 или &4продолжить &9использование программы? (&20-Выйти&0/&41-Продолжить&0)",0,1);
 
 		if (!choice) {
-			if (!ui.confirm()) continue; /// XD
 			MusicPlayer::playSound(Exit1);
+			if (!ui.confirm()) continue; /// XD
 			ui.printColor("&6Хорошего дня!");
 			return 0;
 		}
