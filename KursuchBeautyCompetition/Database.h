@@ -2,6 +2,7 @@
 #ifndef DATABASE
 #define DATABASE
 
+#include "Music.h"
 #include "Account.h"
 #include "Participant.h"
 #include <fstream>
@@ -53,6 +54,8 @@ public:
 		}
 		return false;
 	}
+
+	const bool isEmpty() { return participants.empty(); }
 
 	const string getLogin() const { return currentAccount->login; }
 

@@ -1,10 +1,9 @@
 #include "UserInterface.h"
-#include "Music.h"
 
 int main() {
 
-	MusicPlayer player;
-	player.startPlaying();
+	//MusicPlayer player;
+	//player.startPlaying();
 
 	UI ui(UI::colors::Pink);
 	Database database(&ui);
@@ -31,6 +30,7 @@ int main() {
 
 		if (!choice) {
 			if (!ui.confirm()) continue; /// XD
+			MusicPlayer::playSound(Exit1);
 			ui.printColor("&6Хорошего дня!");
 			return 0;
 		}

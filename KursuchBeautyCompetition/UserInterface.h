@@ -8,7 +8,7 @@
 #include "Windows.h"
 
 //#define SOUND
-#define ANIMATIONSPEED 20
+#define ANIMATIONSPEED 30
 
 class UI {
 private:
@@ -32,6 +32,10 @@ public:
 		this->defaultColor = defaultColor;
 		setColor(defaultColor);
 	}
+	/// <summary>
+	/// Задать указатель на базу данных.
+	/// </summary>
+	/// <param name="db">Та самая база данных.</param>
 	void setDatabase(Database* db) { this->db = db; }
 
 	UI::colors defaultColor = White;
@@ -120,6 +124,7 @@ public:
 				printColor("&2Введите значение в диапазоне от " + to_string(min) + " до " + to_string(max));
 			}
 			else {
+				MusicPlayer::playSound(Button_Press1);
 				return input - 48;
 			}
 		}
@@ -128,9 +133,9 @@ public:
 	T inputRange(string text, T min, T max, bool newLine = true) {
 		T input{};
 		while (true) {
-			printColor(text + " : ", newLine,true);
+			printColor(text + " : ", newLine, true);
 #ifdef SOUND
-			cout << (char)7; 
+			cout << (char)7;
 #endif
 			cin >> input;
 			if (cin.fail()) {
@@ -158,7 +163,7 @@ public:
 		if (newLine)  cerr << '\n';
 		bool flag = false;
 		for (char ch : str) {
-			if(animation) Sleep(ANIMATIONSPEED);
+			if (animation) Sleep(ANIMATIONSPEED);
 #ifdef SOUND
 			cout << (char)7;
 #endif
@@ -173,7 +178,7 @@ public:
 		}
 		SetConsoleCP(866);
 		setColor(defaultColor);
-		
+
 	}
 	int printTable(vector<string> data, int precision = -1, bool header = false) {
 		int max = data.at(0).length();
@@ -402,7 +407,10 @@ public:
 	}
 	void sortMenu() {
 		while (true) {
-			if (!db->isLoggedIn()) return;
+			if (!db->isLoggedIn() || db->isEmpty()) {
+				MusicPlayer::playSound(Button_Failure);
+				return;
+			}
 			system("cls");
 			printHeader("Порядки сортировки", 50);
 			printColor("1 - По рейтингу");
@@ -439,7 +447,10 @@ public:
 	}
 	void searchMenu() {
 		while (true) {
-			if (!db->isLoggedIn()) return;
+			if (!db->isLoggedIn() || db->isEmpty()) {
+				MusicPlayer::playSound(Button_Failure);
+				return;
+			}
 			system("cls");
 			printHeader("Признаки поиска", 50);
 			printColor("1 - По стране");
@@ -496,12 +507,14 @@ void Database::login() {
 	while (true) {
 		// Обработка исключительных ситуаций
 		if (currentAccount) {
+			MusicPlayer::playSound(Error);
 			ui->printColor("&2Пользователь уже авторизован");
 			return;
 		}
 		readAccountsFromFile();
 		if (accounts.empty())
 		{
+			MusicPlayer::playSound(Warning);
 			ui->printColor("&2Нет аккаунтов для авторизации");
 			ui->printColor("Создайте аккаунт администратора для начала работы с базой данных");
 			addAccount(1);
@@ -536,11 +549,14 @@ void Database::login() {
 				}
 				else if (!checkLogin(login)) ui->printColor("&2Неверный логин!");
 				else ui->printColor("&2Этот аккаунт - другого типа!");
+				MusicPlayer::playSound(Error);
 			} while (true);
 
 			int accountID = findID(login);
 			if (!accounts.at(accountID)->access) {
 				ui->printColor("&2У этого аккаунта нету доступа. Ожидайте подтверждения организатором.");
+				MusicPlayer::playSound(Access, true);
+				MusicPlayer::playSound(Denied);
 				continue;
 			}
 
@@ -553,12 +569,17 @@ void Database::login() {
 					break;
 				}
 				ui->printColor("&2Неверный пароль!");
+				MusicPlayer::playSound(Button_Restricted);
 			} while (true);
 
+			MusicPlayer::playSound(Access, true);
 			if (attempts < 0) {
+				MusicPlayer::playSound(Denied);
 				ui->printColor("&2Вы неверно ввели пароль больше 3 раз, попробуйте снова.");
 				continue;
 			}
+
+			MusicPlayer::playSound(Granted);
 
 			currentAccount = accounts.at(accountID);
 			ui->printColor("&4Авторизация успешна");
@@ -570,6 +591,7 @@ void Database::login() {
 void Database::showAccounts() {
 	if (accounts.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список пуст");
 		return;
 	}
@@ -622,12 +644,15 @@ void Database::addAccount(int type) {
 	if (isLoggedIn()) accounts.emplace_back(new Account(login, password, accountType, true));
 	else accounts.emplace_back(new Account(login, password, accountType, false));
 
+	MusicPlayer::playSound(Add);
+
 	writeAccountsToFile();
 }
 void Database::removeAccount() {
 	showAccounts();
 
 	if (accounts.empty()) {
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2 Нечего удалять");
 		return;
 	}
@@ -637,6 +662,7 @@ void Database::removeAccount() {
 
 	if (currentAccount == accounts.at(id)) {
 		system("cls");
+		MusicPlayer::playSound(Error);
 		ui->printColor("&2Вы не можете удалить аккаунт в котором авторизованы");
 		return;
 	}
@@ -657,11 +683,16 @@ void Database::grantAccess()
 
 	if (currentAccount == accounts.at(id)) {
 		system("cls");
+		MusicPlayer::playSound(Button_Failure,true);
+		MusicPlayer::playSound(Error);
 		ui->printColor("&2Вы не можете отобрать доступ у аккаунта, в котором авторизованы");
 		return;
 	}
 
 	accounts.at(id)->access = !accounts.at(id)->access;
+	MusicPlayer::playSound(Access);
+	if (accounts.at(id)->access) MusicPlayer::playSound(Granted);
+	else MusicPlayer::playSound(Denied);
 
 	writeAccountsToFile();
 
@@ -669,7 +700,10 @@ void Database::grantAccess()
 }
 void Database::changePassword()
 {
-	if (!isLoggedIn()) { return; }
+	if (!isLoggedIn()) {
+		MusicPlayer::playSound(Error);
+		return;
+	}
 
 	if (whoIsNow() == 1) {
 		// Админ меняет пароли юзеров
@@ -698,6 +732,7 @@ void Database::changePassword()
 void Database::showGenericParticipantInfo() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
@@ -729,6 +764,7 @@ void Database::showGenericParticipantInfo() {
 void Database::showDetailParticipantInfo() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
@@ -766,6 +802,7 @@ void Database::showDetailParticipantInfo() {
 void Database::showRateParticipantInfo() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
@@ -796,6 +833,7 @@ void Database::showRateParticipantInfo() {
 void Database::showBannedParticipantInfo() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
@@ -846,6 +884,8 @@ void Database::addParticipant() {
 
 	participants.emplace_back(new Participant(name, surName, country, age, height, weight, 0, true));
 
+	MusicPlayer::playSound(Add);
+
 	writeParticipantsToFile();
 }
 void Database::removeParticipant() {
@@ -871,6 +911,7 @@ void Database::banParticipant()
 	showGenericParticipantInfo();
 
 	if (participants.empty()) {
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2 Нечего удалять");
 		return;
 	}
@@ -887,6 +928,7 @@ void Database::unbanParticipant()
 	showBannedParticipantInfo();
 
 	if (participants.empty()) {
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2 Нечего удалять");
 		return;
 	}
@@ -902,6 +944,7 @@ void Database::rateParticipant()
 {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Некого оценивать");
 		return;
 	}
@@ -919,6 +962,7 @@ void Database::rateParticipant()
 void Database::findParticipantSurname() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участниц пуст");
 		return;
 	}
@@ -953,6 +997,7 @@ void Database::findParticipantSurname() {
 void Database::findParticipantAge() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
@@ -987,6 +1032,7 @@ void Database::findParticipantAge() {
 void Database::findParticipantCountry() {
 	if (participants.empty())
 	{
+		MusicPlayer::playSound(Button_Failure);
 		ui->printColor("&2Список участников пуст");
 		return;
 	}
